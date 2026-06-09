@@ -13,7 +13,7 @@ public interface IClientService {
 
     ClientResponseDTO findById(String idClient);
 
-    ClientResponseDTO update(ClientRequestDTO request, String idClient);
+    ClientResponseDTO update(ClientRequestDTO request, String idClient, String userId, String clientIdHeader);
 
     void delete(String idClient, String userId);
 }

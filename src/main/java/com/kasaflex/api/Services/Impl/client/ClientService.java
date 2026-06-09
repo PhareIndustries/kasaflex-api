@@ -58,7 +58,9 @@ public class ClientService implements IClientService {
 
     @Override
     @Transactional
-    public ClientResponseDTO update(ClientRequestDTO request, String idClient) {
+    public ClientResponseDTO update(ClientRequestDTO request, String idClient, String userId, String clientIdHeader) {
+        authorizationService.ensureCanUpdateClient(userId, clientIdHeader, idClient);
+
         Client client = clientRepository.findById(idClient)
                 .orElseThrow(() -> new EntityNotFoundException("Client introuvable : " + idClient));
 

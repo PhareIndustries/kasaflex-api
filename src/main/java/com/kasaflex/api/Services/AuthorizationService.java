@@ -29,4 +29,28 @@ public class AuthorizationService {
             throw new AccessDeniedException("Accès réservé aux administrateurs");
         }
     }
+
+    @Transactional(readOnly = true)
+    public void ensureCanUpdateClient(String userId, String clientIdHeader, String idClient) {
+        if (isAdmin(userId)) {
+            return;
+        }
+
+        if (StringUtils.hasText(clientIdHeader) && clientIdHeader.equals(idClient)) {
+            return;
+        }
+
+        throw new AccessDeniedException(
+                "Accès refusé : seul le client concerné ou un administrateur peut modifier ce compte");
+    }
+
+    private boolean isAdmin(String userId) {
+        if (!StringUtils.hasText(userId)) {
+            return false;
+        }
+
+        return userRepository.findById(userId)
+                .map(user -> ADMIN_ROLE.equalsIgnoreCase(user.getRole().getNomRole()))
+                .orElse(false);
+    }
 }

@@ -39,8 +39,10 @@ public class ClientController {
     @PutMapping("/{idClient}")
     public ResponseEntity<ClientResponseDTO> update(
             @PathVariable String idClient,
+            @RequestHeader(value = "X-User-Id", required = false) String userId,
+            @RequestHeader(value = "X-Client-Id", required = false) String clientIdHeader,
             @Valid @RequestBody ClientRequestDTO request) {
-        return ResponseEntity.ok(clientService.update(request, idClient));
+        return ResponseEntity.ok(clientService.update(request, idClient, userId, clientIdHeader));
     }
 
     @DeleteMapping("/{idClient}")
