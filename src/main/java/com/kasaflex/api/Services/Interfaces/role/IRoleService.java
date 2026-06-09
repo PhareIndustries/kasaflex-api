@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface IRoleService {
 
-    RoleResponseDTO save(RoleRequestDTO role);
+    RoleResponseDTO save(RoleRequestDTO role, String userId);
 
     List<RoleResponseDTO> findAll();
 
     RoleResponseDTO getRoleById(String id);
 
-    void delete(String id);
+    void delete(String id, String userId);
 }

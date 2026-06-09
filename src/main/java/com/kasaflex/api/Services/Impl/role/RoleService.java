@@ -5,6 +5,7 @@ import com.kasaflex.api.DTOs.role.RoleResponseDTO;
 import com.kasaflex.api.Entities.Role;
 import com.kasaflex.api.Mappers.RoleMapper;
 import com.kasaflex.api.Repositories.role.RoleRepository;
+import com.kasaflex.api.Services.AuthorizationService;
 import com.kasaflex.api.Services.Interfaces.role.IRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,12 @@ public class RoleService implements IRoleService {
 
     private final RoleRepository roleRepository;
     private final RoleMapper roleMapper;
+    private final AuthorizationService authorizationService;
 
     @Override
-    public RoleResponseDTO save(RoleRequestDTO dto) {
+    public RoleResponseDTO save(RoleRequestDTO dto, String userId) {
+        authorizationService.ensureAdmin(userId);
+
         Role role = roleMapper.toEntity(dto);
         Role savedRole = roleRepository.save(role);
 
@@ -43,7 +47,8 @@ public class RoleService implements IRoleService {
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(String id, String userId) {
+        authorizationService.ensureAdmin(userId);
 
         Role role = roleRepository.findById(id)
                 .orElseThrow(() ->
