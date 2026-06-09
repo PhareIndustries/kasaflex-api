@@ -21,8 +21,8 @@ public class RoleService implements IRoleService {
     private final AuthorizationService authorizationService;
 
     @Override
-    public RoleResponseDTO save(RoleRequestDTO dto, String userId) {
-        authorizationService.ensureAdmin(userId);
+    public RoleResponseDTO save(RoleRequestDTO dto) {
+        authorizationService.ensureAdmin();
 
         Role role = roleMapper.toEntity(dto);
         Role savedRole = roleRepository.save(role);
@@ -47,8 +47,8 @@ public class RoleService implements IRoleService {
     }
 
     @Override
-    public void delete(String id, String userId) {
-        authorizationService.ensureAdmin(userId);
+    public void delete(String id) {
+        authorizationService.ensureAdmin();
 
         Role role = roleRepository.findById(id)
                 .orElseThrow(() ->

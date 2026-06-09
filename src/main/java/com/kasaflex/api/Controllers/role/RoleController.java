@@ -18,10 +18,8 @@ public class RoleController {
     private final IRoleService roleService;
 
     @PostMapping
-    public RoleResponseDTO createRole(
-            @RequestHeader("X-User-Id") String userId,
-            @RequestBody RoleRequestDTO roleRequestDTO) {
-        return roleService.save(roleRequestDTO, userId);
+    public RoleResponseDTO createRole(@RequestBody RoleRequestDTO roleRequestDTO) {
+        return roleService.save(roleRequestDTO);
     }
 
     @GetMapping
@@ -30,10 +28,8 @@ public class RoleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRole(
-            @RequestHeader("X-User-Id") String userId,
-            @PathVariable String id) {
-        roleService.delete(id, userId);
+    public ResponseEntity<Void> deleteRole(@PathVariable String id) {
+        roleService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

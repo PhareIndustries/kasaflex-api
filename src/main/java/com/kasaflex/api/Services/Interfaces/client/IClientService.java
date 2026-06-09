@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface IClientService {
 
-    ClientResponseDTO save(ClientRequestDTO request, String userId);
+    ClientResponseDTO save(ClientRequestDTO request);
 
     List<ClientResponseDTO> findAll();
 
     ClientResponseDTO findById(String idClient);
 
-    ClientResponseDTO update(ClientRequestDTO request, String idClient, String userId, String clientIdHeader);
+    ClientResponseDTO update(ClientRequestDTO request, String idClient);
 
-    void delete(String idClient, String userId);
+    void delete(String idClient);
 }

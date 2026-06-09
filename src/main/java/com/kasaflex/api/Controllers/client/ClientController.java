@@ -19,10 +19,8 @@ public class ClientController {
     private final IClientService clientService;
 
     @PostMapping
-    public ResponseEntity<ClientResponseDTO> save(
-            @RequestHeader("X-User-Id") String userId,
-            @Valid @RequestBody ClientRequestDTO request) {
-        ClientResponseDTO response = clientService.save(request, userId);
+    public ResponseEntity<ClientResponseDTO> save(@Valid @RequestBody ClientRequestDTO request) {
+        ClientResponseDTO response = clientService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -39,17 +37,13 @@ public class ClientController {
     @PutMapping("/{idClient}")
     public ResponseEntity<ClientResponseDTO> update(
             @PathVariable String idClient,
-            @RequestHeader(value = "X-User-Id", required = false) String userId,
-            @RequestHeader(value = "X-Client-Id", required = false) String clientIdHeader,
             @Valid @RequestBody ClientRequestDTO request) {
-        return ResponseEntity.ok(clientService.update(request, idClient, userId, clientIdHeader));
+        return ResponseEntity.ok(clientService.update(request, idClient));
     }
 
     @DeleteMapping("/{idClient}")
-    public ResponseEntity<Void> delete(
-            @RequestHeader("X-User-Id") String userId,
-            @PathVariable String idClient) {
-        clientService.delete(idClient, userId);
+    public ResponseEntity<Void> delete(@PathVariable String idClient) {
+        clientService.delete(idClient);
         return ResponseEntity.noContent().build();
     }
 }

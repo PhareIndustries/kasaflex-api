@@ -23,8 +23,8 @@ public class ClientService implements IClientService {
 
     @Override
     @Transactional
-    public ClientResponseDTO save(ClientRequestDTO request, String userId) {
-        authorizationService.ensureAdmin(userId);
+    public ClientResponseDTO save(ClientRequestDTO request) {
+        authorizationService.ensureAdmin();
 
         Client client = new Client();
         client.setNom(request.getNom());
@@ -58,8 +58,8 @@ public class ClientService implements IClientService {
 
     @Override
     @Transactional
-    public ClientResponseDTO update(ClientRequestDTO request, String idClient, String userId, String clientIdHeader) {
-        authorizationService.ensureCanUpdateClient(userId, clientIdHeader, idClient);
+    public ClientResponseDTO update(ClientRequestDTO request, String idClient) {
+        authorizationService.ensureCanUpdateClient(idClient);
 
         Client client = clientRepository.findById(idClient)
                 .orElseThrow(() -> new EntityNotFoundException("Client introuvable : " + idClient));
@@ -76,8 +76,8 @@ public class ClientService implements IClientService {
 
     @Override
     @Transactional
-    public void delete(String idClient, String userId) {
-        authorizationService.ensureAdmin(userId);
+    public void delete(String idClient) {
+        authorizationService.ensureAdmin();
 
         Client client = clientRepository.findById(idClient)
                 .orElseThrow(() -> new EntityNotFoundException("Client introuvable : " + idClient));
