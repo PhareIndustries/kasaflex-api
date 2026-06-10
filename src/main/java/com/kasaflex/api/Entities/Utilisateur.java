@@ -15,17 +15,17 @@ import org.hibernate.annotations.Generated;
 import org.hibernate.generator.EventType;
 
 @Entity
-@Table(name = "user")
+@Table(name = "utilisateur")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Utilisateur {
 
     @Id
-    @Column(name = "idUser", length = 50, nullable = false, insertable = false, updatable = false)
+    @Column(name = "idutilisateur", length = 50, nullable = false, insertable = false, updatable = false)
     @Generated(event = EventType.INSERT)
-    private String idUser;
+    private String idUtilisateur;
 
     @Column(name = "nom", length = 50, nullable = false)
     private String nom;

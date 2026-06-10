@@ -1,8 +1,8 @@
-package com.kasaflex.api.Controllers.user;
+package com.kasaflex.api.Controllers.utilisateur;
 
-import com.kasaflex.api.DTOs.user.UserRequestDTO;
-import com.kasaflex.api.DTOs.user.UserResponseDTO;
-import com.kasaflex.api.Services.Interfaces.user.IUserService;
+import com.kasaflex.api.DTOs.utilisateur.UtilisateurRequestDTO;
+import com.kasaflex.api.DTOs.utilisateur.UtilisateurResponseDTO;
+import com.kasaflex.api.Services.Interfaces.utilisateur.IUtilisateurService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,30 +14,30 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class UserController {
+public class UtilisateurController {
 
-    private final IUserService userService;
+    private final IUtilisateurService userService;
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> save(@Valid @RequestBody UserRequestDTO request) {
-        UserResponseDTO response = userService.save(request);
+    public ResponseEntity<UtilisateurResponseDTO> save(@Valid @RequestBody UtilisateurRequestDTO request) {
+        UtilisateurResponseDTO response = userService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> findAll() {
+    public ResponseEntity<List<UtilisateurResponseDTO>> findAll() {
         return ResponseEntity.ok(userService.findAll());
     }
 
     @GetMapping("/{idUser}")
-    public ResponseEntity<UserResponseDTO> findById(@PathVariable String idUser) {
+    public ResponseEntity<UtilisateurResponseDTO> findById(@PathVariable String idUser) {
         return ResponseEntity.ok(userService.findById(idUser));
     }
 
     @PutMapping("/{idUser}")
-    public ResponseEntity<UserResponseDTO> update(
+    public ResponseEntity<UtilisateurResponseDTO> update(
             @PathVariable String idUser,
-            @Valid @RequestBody UserRequestDTO request) {
+            @Valid @RequestBody UtilisateurRequestDTO request) {
         return ResponseEntity.ok(userService.update(request, idUser));
     }
 

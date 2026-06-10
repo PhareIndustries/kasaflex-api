@@ -12,18 +12,19 @@ import org.hibernate.annotations.Generated;
 import org.hibernate.generator.EventType;
 
 @Entity
-@Table(name = "role")
+@Table(name = "statut")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class Role {
-
+@NoArgsConstructor
+public class Statut {
     @Id
-    @Column(name = "idrole", length = 50, nullable = false, insertable = false, updatable = false)
+    @Column(name = "idstatut", length = 50, nullable = false, insertable = false, updatable = false)
     @Generated(event = EventType.INSERT)
-    private String idRole;
+    private String idStatut;
 
-    @Column(name = "nomrole", nullable = false, unique = true)
-    private String nomRole;
+    @Column(name = "nomstatut",length = 50,nullable = false,unique = true)
+    private String nomStatut;
+
+
 }

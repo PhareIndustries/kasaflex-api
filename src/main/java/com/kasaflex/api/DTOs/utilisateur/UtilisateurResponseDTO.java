@@ -1,4 +1,4 @@
-package com.kasaflex.api.DTOs.user;
+package com.kasaflex.api.DTOs.utilisateur;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponseDTO {
+public class UtilisateurResponseDTO {
 
     private String idUser;
     private String nom;
