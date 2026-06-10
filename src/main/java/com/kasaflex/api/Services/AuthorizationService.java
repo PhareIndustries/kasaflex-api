@@ -1,8 +1,8 @@
 package com.kasaflex.api.Services;
 
-import com.kasaflex.api.Entities.User;
+import com.kasaflex.api.Entities.Utilisateur;
 import com.kasaflex.api.Exceptions.AccessDeniedException;
-import com.kasaflex.api.Repositories.user.UserRepository;
+import com.kasaflex.api.Repositories.utilisateur.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +14,7 @@ public class AuthorizationService {
 
     private static final String ADMIN_ROLE = "ADMIN";
 
-    private final UserRepository userRepository;
+    private final UtilisateurRepository utilisateurRepository;
 
     @Transactional(readOnly = true)
     public void ensureAdmin(String userId) {
@@ -22,10 +22,10 @@ public class AuthorizationService {
             throw new AccessDeniedException("Utilisateur non authentifié");
         }
 
-        User user = userRepository.findById(userId)
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new AccessDeniedException("Utilisateur non authentifié"));
 
-        if (!ADMIN_ROLE.equalsIgnoreCase(user.getRole().getNomRole())) {
+        if (!ADMIN_ROLE.equalsIgnoreCase(utilisateur.getRole().getNomRole())) {
             throw new AccessDeniedException("Accès réservé aux administrateurs");
         }
     }
@@ -49,8 +49,8 @@ public class AuthorizationService {
             return false;
         }
 
-        return userRepository.findById(userId)
-                .map(user -> ADMIN_ROLE.equalsIgnoreCase(user.getRole().getNomRole()))
+        return utilisateurRepository.findById(userId)
+                .map(utilisateur -> ADMIN_ROLE.equalsIgnoreCase(utilisateur.getRole().getNomRole()))
                 .orElse(false);
     }
 }
