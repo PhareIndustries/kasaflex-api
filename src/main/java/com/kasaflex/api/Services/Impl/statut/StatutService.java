@@ -24,6 +24,8 @@ public class StatutService implements IStatutService {
     @Override
     @Transactional(readOnly = true)
     public StatutResponseDTO save(StatutRequestDTO dto) {
+        authorizationService.ensureAdmin();
+
         Statut statut = new Statut();
         statut.setNomStatut(dto.getNomStatut());
         Statut saved = statutRepository.save(statut);
@@ -42,6 +44,8 @@ public class StatutService implements IStatutService {
 
     @Override
     public StatutResponseDTO update(StatutRequestDTO item, String idStatut) {
+        authorizationService.ensureAdmin();
+
         Statut statut = statutRepository.findById(idStatut)
                 .orElseThrow(() -> new EntityNotFoundException("Statut introuvable : " + idStatut));
         statut.setNomStatut(item.getNomStatut());
