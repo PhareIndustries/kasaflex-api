@@ -9,6 +9,7 @@ import com.kasaflex.api.Mappers.StationMapper;
 import com.kasaflex.api.Repositories.client.ClientRepository;
 import com.kasaflex.api.Repositories.modele.ModeleRepository;
 import com.kasaflex.api.Repositories.station.StationRepository;
+import com.kasaflex.api.Services.AuthorizationService;
 import com.kasaflex.api.Services.Interfaces.station.IStationService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +24,13 @@ public class StationService implements IStationService {
     private final StationRepository stationRepository;
     private final ModeleRepository modeleRepository;
     private final ClientRepository clientRepository;
-
+    private final AuthorizationService authorizationService;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public StationResponseDTO save(StationRequestDTO request) {
+        authorizationService.ensureAdmin();
+
         Modele modele = modeleRepository.findById(request.getModele())
                 .orElseThrow(() -> new EntityNotFoundException("Modèle introuvable : " + request.getModele()));
 
@@ -58,8 +61,10 @@ public class StationService implements IStationService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public StationResponseDTO update(StationRequestDTO request, String idStation) {
+        authorizationService.ensureAuthenticatedUtilisateur();
+
         Station station = stationRepository.findById(idStation)
                 .orElseThrow(() -> new EntityNotFoundException("Station introuvable : " + idStation));
 

@@ -56,6 +56,14 @@ public class AuthorizationService {
                 "Accès refusé : seul le propriétaire du compte ou un administrateur peut modifier cet utilisateur");
     }
 
+    public void ensureAuthenticatedUtilisateur() {
+        AuthContext context = requireAuth();
+
+        if (!JwtService.TYPE_USER.equals(context.getType())) {
+            throw new AccessDeniedException("Authentification utilisateur requise");
+        }
+    }
+
     public boolean isAdmin() {
         return AuthContextHolder.get()
                 .map(context -> JwtService.TYPE_USER.equals(context.getType())

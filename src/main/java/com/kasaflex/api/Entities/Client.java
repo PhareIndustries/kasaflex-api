@@ -19,7 +19,7 @@ import org.hibernate.generator.EventType;
 @AllArgsConstructor
 public class Client {
     @Id
-    @Column(name = "idClient", length = 50, nullable = false, insertable = false, updatable = false)
+    @Column(name = "idclient", length = 50, nullable = false, insertable = false, updatable = false)
     @Generated(event = EventType.INSERT)
     private String idClient;
 

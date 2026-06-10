@@ -33,7 +33,7 @@ public class UtilisateurRequestDTO {
     )
     private String motDePasse;
 
-    @NotBlank(message = "Le rôle est obligatoire")
+    @NotBlank(groups = OnCreate.class, message = "Le rôle est obligatoire")
     @JsonProperty("idrole")
     private String idRole;
 }

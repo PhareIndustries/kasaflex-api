@@ -7,6 +7,7 @@ import com.kasaflex.api.Entities.Utilisateur;
 import com.kasaflex.api.Mappers.UtilisateurMapper;
 import com.kasaflex.api.Repositories.role.RoleRepository;
 import com.kasaflex.api.Repositories.utilisateur.UtilisateurRepository;
+import com.kasaflex.api.Exceptions.AccessDeniedException;
 import com.kasaflex.api.Services.AuthorizationService;
 import com.kasaflex.api.Services.Interfaces.utilisateur.IUtilisateurService;
 import jakarta.persistence.EntityNotFoundException;
@@ -77,9 +78,7 @@ public class UtilisateurService implements IUtilisateurService {
         Utilisateur utilisateur = utilisateurRepository.findById(idUtilisateur)
                 .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + idUtilisateur));
 
-        Role role = authorizationService.isAdmin()
-                ? findRole(request.getIdRole())
-                : utilisateur.getRole();
+        Role role = resolveRoleForUpdate(request, utilisateur);
 
         utilisateurRepository.findByMail(request.getMail())
                 .filter(existing -> !existing.getIdUtilisateur().equals(idUtilisateur))
@@ -108,6 +107,19 @@ public class UtilisateurService implements IUtilisateurService {
                 .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + idUtilisateur));
 
         utilisateurRepository.delete(utilisateur);
+    }
+
+    private Role resolveRoleForUpdate(UtilisateurRequestDTO request, Utilisateur utilisateur) {
+        if (authorizationService.isAdmin()) {
+            return findRole(request.getIdRole());
+        }
+
+        if (StringUtils.hasText(request.getIdRole())
+                && !request.getIdRole().equals(utilisateur.getRole().getIdRole())) {
+            throw new AccessDeniedException("Seuls les administrateurs peuvent modifier le rôle");
+        }
+
+        return utilisateur.getRole();
     }
 
     private Role findRole(String idRole) {
