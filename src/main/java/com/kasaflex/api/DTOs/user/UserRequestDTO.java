@@ -1,4 +1,4 @@
-package com.kasaflex.api.DTOs.client;
+package com.kasaflex.api.DTOs.user;
 
 import jakarta.validation.constraints.Mail;
 import jakarta.validation.constraints.NotBlank;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientRequestDTO {
+public class UserRequestDTO {
 
     @NotBlank
     private String nom;
@@ -19,12 +19,11 @@ public class ClientRequestDTO {
     private String prenom;
 
     @NotBlank
-    private String adresse;
-
-    @NotBlank
-    private String telephone;
-
-    @NotBlank
     @Mail
     private String mail;
+
+    private String motDePasse;
+
+    @NotBlank
+    private String role;
 }

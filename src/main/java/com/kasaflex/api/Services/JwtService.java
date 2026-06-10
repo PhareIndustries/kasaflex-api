@@ -1,6 +1,6 @@
 package com.kasaflex.api.Services;
 
-import com.kasaflex.api.Entities.User;
+import com.kasaflex.api.Entities.Utilisateur;
 import com.kasaflex.api.Security.AuthContext;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,7 +15,7 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    public static final String TYPE_USER = "USER";
+    public static final String TYPE_USER = "UTILISATEUR";
     public static final String TYPE_CLIENT = "CLIENT";
 
     @Value("${jwt.secret}")
@@ -24,15 +24,15 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long expiration;
 
-    public String generateToken(User user) {
+    public String generateToken(Utilisateur utilisateur) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
-                .subject(user.getIdUser())
-                .claim("id", user.getIdUser())
-                .claim("email", user.getEmail())
-                .claim("role", user.getRole().getNomRole())
+                .subject(utilisateur.getIdUtilisateur())
+                .claim("id", utilisateur.getIdUtilisateur())
+                .claim("mail", utilisateur.getMail())
+                .claim("role", utilisateur.getRole().getNomRole())
                 .claim("type", TYPE_USER)
                 .issuedAt(now)
                 .expiration(expiry)
@@ -49,7 +49,7 @@ public class JwtService {
 
         return new AuthContext(
                 claims.getSubject(),
-                claims.get("email", String.class),
+                claims.get("mail", String.class),
                 claims.get("role", String.class),
                 claims.get("type", String.class)
         );

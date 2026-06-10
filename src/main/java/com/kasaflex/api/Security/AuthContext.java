@@ -8,7 +8,7 @@ import lombok.Getter;
 public class AuthContext {
 
     private final String id;
-    private final String email;
+    private final String mail;
     private final String role;
     private final String type;
 }

@@ -34,8 +34,8 @@ public class StatutController {
     }
 
     @DeleteMapping("/{idStatut}")
-    public ResponseEntity<Void> delete(@RequestHeader("X-User-Id") String userId,@PathVariable String idStatut) {
-        statutService.delete(idStatut, userId);
+    public ResponseEntity<Void> delete(@PathVariable String idStatut) {
+        statutService.delete(idStatut);
         return ResponseEntity.noContent().build();
     }
 }

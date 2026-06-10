@@ -12,7 +12,7 @@ public class ClientMapper {
                 client.getPrenom(),
                 client.getAdresse(),
                 client.getTelephone(),
-                client.getEmail()
+                client.getMail()
         );
     }
 }

@@ -31,7 +31,7 @@ public class ClientService implements IClientService {
         client.setPrenom(request.getPrenom());
         client.setAdresse(request.getAdresse());
         client.setTelephone(request.getTelephone());
-        client.setEmail(request.getEmail());
+        client.setMail(request.getMail());
 
         Client saved = clientRepository.save(client);
         return new ClientMapper().toResponse(saved);
@@ -68,7 +68,7 @@ public class ClientService implements IClientService {
         client.setPrenom(request.getPrenom());
         client.setAdresse(request.getAdresse());
         client.setTelephone(request.getTelephone());
-        client.setEmail(request.getEmail());
+        client.setMail(request.getMail());
 
         Client updated = clientRepository.save(client);
         return new ClientMapper().toResponse(updated);

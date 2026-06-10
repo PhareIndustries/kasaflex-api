@@ -7,6 +7,7 @@ import com.kasaflex.api.Mappers.RoleMapper;
 import com.kasaflex.api.Repositories.role.RoleRepository;
 import com.kasaflex.api.Services.AuthorizationService;
 import com.kasaflex.api.Services.Interfaces.role.IRoleService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,10 +41,25 @@ public class RoleService implements IRoleService {
 
     @Override
     public RoleResponseDTO getRoleById(String id) {
+        authorizationService.ensureAdmin();
+
         Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Role introuvable"));
+                .orElseThrow(() -> new EntityNotFoundException("Rôle introuvable : " + id));
 
         return roleMapper.toResponseDTO(role);
+    }
+
+    @Override
+    public RoleResponseDTO update(String id, RoleRequestDTO dto) {
+        authorizationService.ensureAdmin();
+
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Rôle introuvable : " + id));
+
+        role.setNomRole(dto.getNomRole());
+        Role updated = roleRepository.save(role);
+
+        return roleMapper.toResponseDTO(updated);
     }
 
     @Override
@@ -51,8 +67,7 @@ public class RoleService implements IRoleService {
         authorizationService.ensureAdmin();
 
         Role role = roleRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Role introuvable"));
+                .orElseThrow(() -> new EntityNotFoundException("Rôle introuvable : " + id));
 
         roleRepository.delete(role);
     }

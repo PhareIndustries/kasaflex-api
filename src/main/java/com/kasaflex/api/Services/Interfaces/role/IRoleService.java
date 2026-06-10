@@ -13,5 +13,7 @@ public interface IRoleService {
 
     RoleResponseDTO getRoleById(String id);
 
+    RoleResponseDTO update(String id, RoleRequestDTO dto);
+
     void delete(String id);
 }

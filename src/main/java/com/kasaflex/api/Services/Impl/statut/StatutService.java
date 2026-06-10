@@ -62,8 +62,8 @@ public class StatutService implements IStatutService {
 
     @Override
     @Transactional
-    public void delete(String idStatut, String userId) {
-        authorizationService.ensureAdmin(userId);
+    public void delete(String idStatut) {
+        authorizationService.ensureAdmin();
 
         Statut statut = statutRepository.findById(idStatut)
                 .orElseThrow(() -> new EntityNotFoundException("Statut introuvable : " + idStatut));

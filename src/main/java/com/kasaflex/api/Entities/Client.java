@@ -35,8 +35,8 @@ public class Client {
     @Column(name = "telephone", length = 50, nullable = false,unique = true)
     private String telephone;
 
-    @Column(name = "email", length = 50, nullable = false,unique = true)
-    private String email;
+    @Column(name = "mail", length = 50, nullable = false,unique = true)
+    private String mail;
 
 
 }

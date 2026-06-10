@@ -10,7 +10,7 @@ public class UtilisateurMapper {
                 utilisateur.getIdUtilisateur(),
                 utilisateur.getNom(),
                 utilisateur.getPrenom(),
-                utilisateur.getEmail(),
+                utilisateur.getMail(),
                 utilisateur.getRole().getIdRole()
         );
     }
