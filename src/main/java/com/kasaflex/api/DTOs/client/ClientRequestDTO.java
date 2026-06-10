@@ -1,6 +1,6 @@
 package com.kasaflex.api.DTOs.client;
 
-import jakarta.validation.constraints.Mail;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +25,6 @@ public class ClientRequestDTO {
     private String telephone;
 
     @NotBlank
-    @Mail
+    @Email
     private String mail;
 }

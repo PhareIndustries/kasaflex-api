@@ -41,8 +41,6 @@ public class RoleService implements IRoleService {
 
     @Override
     public RoleResponseDTO getRoleById(String id) {
-        authorizationService.ensureAdmin();
-
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Rôle introuvable : " + id));
 

@@ -1,6 +1,6 @@
 package com.kasaflex.api.DTOs.user;
 
-import jakarta.validation.constraints.Mail;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +19,7 @@ public class UserRequestDTO {
     private String prenom;
 
     @NotBlank
-    @Mail
+    @Email
     private String mail;
 
     private String motDePasse;

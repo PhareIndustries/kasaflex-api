@@ -39,6 +39,30 @@ public class AuthorizationService {
                 "Accès refusé : seul le client concerné ou un administrateur peut modifier ce compte");
     }
 
+    public void ensureCanUpdateUtilisateur(String idUtilisateur) {
+        AuthContext context = requireAuth();
+
+        if (JwtService.TYPE_USER.equals(context.getType())
+                && ADMIN_ROLE.equalsIgnoreCase(context.getRole())) {
+            return;
+        }
+
+        if (JwtService.TYPE_USER.equals(context.getType())
+                && context.getId().equals(idUtilisateur)) {
+            return;
+        }
+
+        throw new AccessDeniedException(
+                "Accès refusé : seul le propriétaire du compte ou un administrateur peut modifier cet utilisateur");
+    }
+
+    public boolean isAdmin() {
+        return AuthContextHolder.get()
+                .map(context -> JwtService.TYPE_USER.equals(context.getType())
+                        && ADMIN_ROLE.equalsIgnoreCase(context.getRole()))
+                .orElse(false);
+    }
+
     private AuthContext requireAuth() {
         return AuthContextHolder.get()
                 .orElseThrow(() -> new AccessDeniedException("Authentification requise"));

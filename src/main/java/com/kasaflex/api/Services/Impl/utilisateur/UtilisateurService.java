@@ -7,6 +7,7 @@ import com.kasaflex.api.Entities.Utilisateur;
 import com.kasaflex.api.Mappers.UtilisateurMapper;
 import com.kasaflex.api.Repositories.role.RoleRepository;
 import com.kasaflex.api.Repositories.utilisateur.UtilisateurRepository;
+import com.kasaflex.api.Services.AuthorizationService;
 import com.kasaflex.api.Services.Interfaces.utilisateur.IUtilisateurService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,13 @@ public class UtilisateurService implements IUtilisateurService {
     private final UtilisateurRepository utilisateurRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthorizationService authorizationService;
 
     @Override
     @Transactional
     public UtilisateurResponseDTO save(UtilisateurRequestDTO request) {
+        authorizationService.ensureAdmin();
+
         if (utilisateurRepository.findByMail(request.getMail()).isPresent()) {
             throw new IllegalArgumentException("Cet mail est déjà utilisé");
         }
@@ -48,10 +52,11 @@ public class UtilisateurService implements IUtilisateurService {
     @Override
     @Transactional(readOnly = true)
     public List<UtilisateurResponseDTO> findAll() {
+        boolean includePassword = authorizationService.isAdmin();
         UtilisateurMapper mapper = new UtilisateurMapper();
         return utilisateurRepository.findAll()
                 .stream()
-                .map(mapper::toResponse)
+                .map(utilisateur -> mapper.toResponse(utilisateur, includePassword))
                 .toList();
     }
 
@@ -61,16 +66,20 @@ public class UtilisateurService implements IUtilisateurService {
         Utilisateur utilisateur = utilisateurRepository.findById(idUtilisateur)
                 .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + idUtilisateur));
 
-        return new UtilisateurMapper().toResponse(utilisateur);
+        return new UtilisateurMapper().toResponse(utilisateur, authorizationService.isAdmin());
     }
 
     @Override
     @Transactional
     public UtilisateurResponseDTO update(UtilisateurRequestDTO request, String idUtilisateur) {
+        authorizationService.ensureCanUpdateUtilisateur(idUtilisateur);
+
         Utilisateur utilisateur = utilisateurRepository.findById(idUtilisateur)
                 .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + idUtilisateur));
 
-        Role role = findRole(request.getIdRole());
+        Role role = authorizationService.isAdmin()
+                ? findRole(request.getIdRole())
+                : utilisateur.getRole();
 
         utilisateurRepository.findByMail(request.getMail())
                 .filter(existing -> !existing.getIdUtilisateur().equals(idUtilisateur))
@@ -94,6 +103,7 @@ public class UtilisateurService implements IUtilisateurService {
     @Override
     @Transactional
     public void delete(String idUtilisateur) {
+        authorizationService.ensureAdmin();
         Utilisateur utilisateur = utilisateurRepository.findById(idUtilisateur)
                 .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + idUtilisateur));
 
