@@ -28,22 +28,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            try {
-                AuthContext context = jwtService.parseToken(token);
-                AuthContextHolder.set(context);
-            } catch (JwtException ex) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                objectMapper.writeValue(
-                        response.getWriter(),
-                        Map.of("message", "Token invalide ou expiré")
-                );
-                return;
-            }
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            sendUnauthorized(response, "Authentification requise");
+            return;
+        }
+
+        String token = authHeader.substring(7);
+        try {
+            AuthContext context = jwtService.parseToken(token);
+            AuthContextHolder.set(context);
+        } catch (JwtException ex) {
+            sendUnauthorized(response, "Token invalide ou expiré");
+            return;
         }
 
         try {
@@ -51,6 +54,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         } finally {
             AuthContextHolder.clear();
         }
+    }
+
+    private void sendUnauthorized(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        objectMapper.writeValue(response.getWriter(), Map.of("message", message));
     }
 
     @Override
