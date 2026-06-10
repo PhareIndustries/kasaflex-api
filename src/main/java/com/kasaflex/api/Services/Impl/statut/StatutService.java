@@ -22,7 +22,7 @@ public class StatutService implements IStatutService {
 
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public StatutResponseDTO save(StatutRequestDTO dto) {
         authorizationService.ensureAdmin();
 
@@ -43,6 +43,7 @@ public class StatutService implements IStatutService {
     }
 
     @Override
+    @Transactional
     public StatutResponseDTO update(StatutRequestDTO item, String idStatut) {
         authorizationService.ensureAdmin();
 
