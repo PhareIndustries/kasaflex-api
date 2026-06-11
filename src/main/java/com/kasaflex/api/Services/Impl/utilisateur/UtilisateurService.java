@@ -7,9 +7,12 @@ import com.kasaflex.api.Entities.Utilisateur;
 import com.kasaflex.api.Mappers.UtilisateurMapper;
 import com.kasaflex.api.Repositories.role.RoleRepository;
 import com.kasaflex.api.Repositories.utilisateur.UtilisateurRepository;
+import com.kasaflex.api.Exceptions.AccessDeniedException;
+import com.kasaflex.api.Services.AuthorizationService;
 import com.kasaflex.api.Services.Interfaces.utilisateur.IUtilisateurService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -22,21 +25,25 @@ public class UtilisateurService implements IUtilisateurService {
 
     private final UtilisateurRepository utilisateurRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthorizationService authorizationService;
 
     @Override
     @Transactional
     public UtilisateurResponseDTO save(UtilisateurRequestDTO request) {
-        if (!StringUtils.hasText(request.getMotDePasse())) {
-            throw new IllegalArgumentException("Le mot de passe est obligatoire");
+        authorizationService.ensureAdmin();
+
+        if (utilisateurRepository.findByMail(request.getMail()).isPresent()) {
+            throw new IllegalArgumentException("Cet mail est déjà utilisé");
         }
 
-        Role role = findRole(request.getRole());
+        Role role = findRole(request.getIdRole());
 
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setNom(request.getNom());
         utilisateur.setPrenom(request.getPrenom());
-        utilisateur.setEmail(request.getEmail());
-        utilisateur.setMotDePasse(request.getMotDePasse());
+        utilisateur.setMail(request.getMail());
+        utilisateur.setMotDePasse(passwordEncoder.encode(request.getMotDePasse()));
         utilisateur.setRole(role);
 
         Utilisateur saved = utilisateurRepository.save(utilisateur);
@@ -46,37 +53,50 @@ public class UtilisateurService implements IUtilisateurService {
     @Override
     @Transactional(readOnly = true)
     public List<UtilisateurResponseDTO> findAll() {
+        authorizationService.ensureAdmin();
+
+        boolean includePassword = authorizationService.isAdmin();
         UtilisateurMapper mapper = new UtilisateurMapper();
         return utilisateurRepository.findAll()
                 .stream()
-                .map(mapper::toResponse)
+                .map(utilisateur -> mapper.toResponse(utilisateur, includePassword))
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UtilisateurResponseDTO findById(String idUser) {
-        Utilisateur utilisateur = utilisateurRepository.findById(idUser)
-                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + idUser));
+    public UtilisateurResponseDTO findById(String idUtilisateur) {
+        authorizationService.ensureCanViewUtilisateur(idUtilisateur);
 
-        return new UtilisateurMapper().toResponse(utilisateur);
+        Utilisateur utilisateur = utilisateurRepository.findById(idUtilisateur)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + idUtilisateur));
+
+        return new UtilisateurMapper().toResponse(utilisateur, authorizationService.isAdmin());
     }
 
     @Override
     @Transactional
-    public UtilisateurResponseDTO update(UtilisateurRequestDTO request, String idUser) {
-        Utilisateur utilisateur = utilisateurRepository.findById(idUser)
-                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + idUser));
+    public UtilisateurResponseDTO update(UtilisateurRequestDTO request, String idUtilisateur) {
+        authorizationService.ensureCanUpdateUtilisateur(idUtilisateur);
 
-        Role role = findRole(request.getRole());
+        Utilisateur utilisateur = utilisateurRepository.findById(idUtilisateur)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + idUtilisateur));
+
+        Role role = resolveRoleForUpdate(request, utilisateur);
+
+        utilisateurRepository.findByMail(request.getMail())
+                .filter(existing -> !existing.getIdUtilisateur().equals(idUtilisateur))
+                .ifPresent(existing -> {
+                    throw new IllegalArgumentException("Cet mail est déjà utilisé");
+                });
 
         utilisateur.setNom(request.getNom());
         utilisateur.setPrenom(request.getPrenom());
-        utilisateur.setEmail(request.getEmail());
+        utilisateur.setMail(request.getMail());
         utilisateur.setRole(role);
 
         if (StringUtils.hasText(request.getMotDePasse())) {
-            utilisateur.setMotDePasse(request.getMotDePasse());
+            utilisateur.setMotDePasse(passwordEncoder.encode(request.getMotDePasse()));
         }
 
         Utilisateur updated = utilisateurRepository.save(utilisateur);
@@ -85,14 +105,31 @@ public class UtilisateurService implements IUtilisateurService {
 
     @Override
     @Transactional
-    public void delete(String idUser) {
-        Utilisateur utilisateur = utilisateurRepository.findById(idUser)
-                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + idUser));
+    public void delete(String idUtilisateur) {
+        authorizationService.ensureAdmin();
+        Utilisateur utilisateur = utilisateurRepository.findById(idUtilisateur)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + idUtilisateur));
 
         utilisateurRepository.delete(utilisateur);
     }
 
+    private Role resolveRoleForUpdate(UtilisateurRequestDTO request, Utilisateur utilisateur) {
+        if (authorizationService.isAdmin()) {
+            return findRole(request.getIdRole());
+        }
+
+        if (StringUtils.hasText(request.getIdRole())
+                && !request.getIdRole().equals(utilisateur.getRole().getIdRole())) {
+            throw new AccessDeniedException("Seuls les administrateurs peuvent modifier le rôle");
+        }
+
+        return utilisateur.getRole();
+    }
+
     private Role findRole(String idRole) {
+        if (!StringUtils.hasText(idRole)) {
+            throw new IllegalArgumentException("Le rôle est obligatoire");
+        }
         return roleRepository.findById(idRole)
                 .orElseThrow(() -> new EntityNotFoundException("Rôle introuvable : " + idRole));
     }

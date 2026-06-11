@@ -1,42 +1,37 @@
 package com.kasaflex.api.Services;
 
-import com.kasaflex.api.Entities.Utilisateur;
 import com.kasaflex.api.Exceptions.AccessDeniedException;
-import com.kasaflex.api.Repositories.utilisateur.UtilisateurRepository;
-import lombok.RequiredArgsConstructor;
+import com.kasaflex.api.Security.AuthContext;
+import com.kasaflex.api.Security.AuthContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 @Service
-@RequiredArgsConstructor
 public class AuthorizationService {
 
     private static final String ADMIN_ROLE = "ADMIN";
 
-    private final UtilisateurRepository utilisateurRepository;
+    public void ensureAdmin() {
+        AuthContext context = requireAuth();
 
-    @Transactional(readOnly = true)
-    public void ensureAdmin(String userId) {
-        if (!StringUtils.hasText(userId)) {
+        if (!JwtService.TYPE_USER.equals(context.getType())) {
             throw new AccessDeniedException("Utilisateur non authentifié");
         }
 
-        Utilisateur utilisateur = utilisateurRepository.findById(userId)
-                .orElseThrow(() -> new AccessDeniedException("Utilisateur non authentifié"));
-
-        if (!ADMIN_ROLE.equalsIgnoreCase(utilisateur.getRole().getNomRole())) {
+        if (!ADMIN_ROLE.equalsIgnoreCase(context.getRole())) {
             throw new AccessDeniedException("Accès réservé aux administrateurs");
         }
     }
 
-    @Transactional(readOnly = true)
-    public void ensureCanUpdateClient(String userId, String clientIdHeader, String idClient) {
-        if (isAdmin(userId)) {
+    public void ensureCanUpdateClient(String idClient) {
+        AuthContext context = requireAuth();
+
+        if (JwtService.TYPE_USER.equals(context.getType())
+                && ADMIN_ROLE.equalsIgnoreCase(context.getRole())) {
             return;
         }
 
-        if (StringUtils.hasText(clientIdHeader) && clientIdHeader.equals(idClient)) {
+        if (JwtService.TYPE_CLIENT.equals(context.getType())
+                && context.getId().equals(idClient)) {
             return;
         }
 
@@ -44,13 +39,44 @@ public class AuthorizationService {
                 "Accès refusé : seul le client concerné ou un administrateur peut modifier ce compte");
     }
 
-    private boolean isAdmin(String userId) {
-        if (!StringUtils.hasText(userId)) {
-            return false;
+    public void ensureCanViewUtilisateur(String idUtilisateur) {
+        ensureCanUpdateUtilisateur(idUtilisateur);
+    }
+
+    public void ensureCanUpdateUtilisateur(String idUtilisateur) {
+        AuthContext context = requireAuth();
+
+        if (JwtService.TYPE_USER.equals(context.getType())
+                && ADMIN_ROLE.equalsIgnoreCase(context.getRole())) {
+            return;
         }
 
-        return utilisateurRepository.findById(userId)
-                .map(utilisateur -> ADMIN_ROLE.equalsIgnoreCase(utilisateur.getRole().getNomRole()))
+        if (JwtService.TYPE_USER.equals(context.getType())
+                && context.getId().equals(idUtilisateur)) {
+            return;
+        }
+
+        throw new AccessDeniedException(
+                "Accès refusé : seul le propriétaire du compte ou un administrateur peut modifier cet utilisateur");
+    }
+
+    public void ensureAuthenticatedUtilisateur() {
+        AuthContext context = requireAuth();
+
+        if (!JwtService.TYPE_USER.equals(context.getType())) {
+            throw new AccessDeniedException("Authentification utilisateur requise");
+        }
+    }
+
+    public boolean isAdmin() {
+        return AuthContextHolder.get()
+                .map(context -> JwtService.TYPE_USER.equals(context.getType())
+                        && ADMIN_ROLE.equalsIgnoreCase(context.getRole()))
                 .orElse(false);
+    }
+
+    private AuthContext requireAuth() {
+        return AuthContextHolder.get()
+                .orElseThrow(() -> new AccessDeniedException("Authentification requise"));
     }
 }

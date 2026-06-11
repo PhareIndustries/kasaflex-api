@@ -27,11 +27,11 @@ import lombok.Setter;
 public class Station {
 
 	@Id
-	@Column(name = "idStation", length = 50, nullable = false, insertable = false, updatable = false)
+	@Column(name = "idstation", length = 50, nullable = false, insertable = false, updatable = false)
 	@Generated(event = EventType.INSERT)
 	private String idStation;
 
-	@Column(name = "nomStation", length = 50, nullable = false)
+	@Column(name = "nomstation", length = 50, nullable = false)
 	private String nomStation;
 
 	@Column(name = "adresse", length = 50, nullable = false)
@@ -43,15 +43,15 @@ public class Station {
 	@Column(name = "longitude", precision = 15, scale = 2, nullable = false)
 	private BigDecimal longitude;
 
-	@Column(name = "dateInstallation", nullable = false)
+	@Column(name = "dateinstallation", nullable = false)
 	private LocalDate dateInstallation;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "idModele", nullable = false)
+	@JoinColumn(name = "idmodele", nullable = false)
 	private Modele modele;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "idClients", nullable = false)
+    @JoinColumn(name = "idclients", nullable = false)
     private Client client;
 
 }

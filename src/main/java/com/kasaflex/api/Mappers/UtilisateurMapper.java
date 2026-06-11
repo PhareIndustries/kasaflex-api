@@ -6,12 +6,18 @@ import com.kasaflex.api.Entities.Utilisateur;
 public class UtilisateurMapper {
 
     public UtilisateurResponseDTO toResponse(Utilisateur utilisateur) {
-        return new UtilisateurResponseDTO(
+        return toResponse(utilisateur, false);
+    }
+
+    public UtilisateurResponseDTO toResponse(Utilisateur utilisateur, boolean includePassword) {
+        UtilisateurResponseDTO dto = new UtilisateurResponseDTO(
                 utilisateur.getIdUtilisateur(),
                 utilisateur.getNom(),
                 utilisateur.getPrenom(),
-                utilisateur.getEmail(),
-                utilisateur.getRole().getIdRole()
+                utilisateur.getMail(),
+                utilisateur.getRole().getIdRole(),
+                includePassword ? utilisateur.getMotDePasse() : null
         );
+        return dto;
     }
 }

@@ -22,8 +22,10 @@ public class StatutService implements IStatutService {
 
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public StatutResponseDTO save(StatutRequestDTO dto) {
+        authorizationService.ensureAdmin();
+
         Statut statut = new Statut();
         statut.setNomStatut(dto.getNomStatut());
         Statut saved = statutRepository.save(statut);
@@ -33,6 +35,8 @@ public class StatutService implements IStatutService {
 
     @Override
     public List<StatutResponseDTO> findAll() {
+        authorizationService.ensureAdmin();
+
         StatutMapper statutMapper = new StatutMapper();
         return statutRepository.findAll()
                 .stream()
@@ -41,7 +45,10 @@ public class StatutService implements IStatutService {
     }
 
     @Override
+    @Transactional
     public StatutResponseDTO update(StatutRequestDTO item, String idStatut) {
+        authorizationService.ensureAdmin();
+
         Statut statut = statutRepository.findById(idStatut)
                 .orElseThrow(() -> new EntityNotFoundException("Statut introuvable : " + idStatut));
         statut.setNomStatut(item.getNomStatut());
@@ -53,6 +60,8 @@ public class StatutService implements IStatutService {
     @Override
     @Transactional(readOnly = true)
     public StatutResponseDTO findById(String idStatut) {
+        authorizationService.ensureAdmin();
+
         Statut statut = statutRepository.findById(idStatut)
                 .orElseThrow(() -> new EntityNotFoundException("Statut introuvable : " + idStatut));
 
@@ -62,8 +71,8 @@ public class StatutService implements IStatutService {
 
     @Override
     @Transactional
-    public void delete(String idStatut, String userId) {
-        authorizationService.ensureAdmin(userId);
+    public void delete(String idStatut) {
+        authorizationService.ensureAdmin();
 
         Statut statut = statutRepository.findById(idStatut)
                 .orElseThrow(() -> new EntityNotFoundException("Statut introuvable : " + idStatut));

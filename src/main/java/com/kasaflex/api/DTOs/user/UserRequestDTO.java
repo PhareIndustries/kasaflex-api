@@ -1,6 +1,7 @@
-package com.kasaflex.api.DTOs.utilisateur;
+package com.kasaflex.api.DTOs.user;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,14 +11,19 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UtilisateurResponseDTO {
+public class UserRequestDTO {
 
-    private String idUtilisateur;
+    @NotBlank
     private String nom;
-    private String prenom;
-    private String mail;
-    private String idRole;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String prenom;
+
+    @NotBlank
+    @Email
+    private String mail;
+
     private String motDePasse;
+
+    @NotBlank
+    private String role;
 }

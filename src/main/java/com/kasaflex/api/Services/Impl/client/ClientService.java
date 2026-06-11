@@ -23,15 +23,15 @@ public class ClientService implements IClientService {
 
     @Override
     @Transactional
-    public ClientResponseDTO save(ClientRequestDTO request, String userId) {
-        authorizationService.ensureAdmin(userId);
+    public ClientResponseDTO save(ClientRequestDTO request) {
+        authorizationService.ensureAdmin();
 
         Client client = new Client();
         client.setNom(request.getNom());
         client.setPrenom(request.getPrenom());
         client.setAdresse(request.getAdresse());
         client.setTelephone(request.getTelephone());
-        client.setEmail(request.getEmail());
+        client.setMail(request.getMail());
 
         Client saved = clientRepository.save(client);
         return new ClientMapper().toResponse(saved);
@@ -40,6 +40,8 @@ public class ClientService implements IClientService {
     @Override
     @Transactional(readOnly = true)
     public List<ClientResponseDTO> findAll() {
+        authorizationService.ensureAdmin();
+
         ClientMapper mapper = new ClientMapper();
         return clientRepository.findAll()
                 .stream()
@@ -50,6 +52,8 @@ public class ClientService implements IClientService {
     @Override
     @Transactional(readOnly = true)
     public ClientResponseDTO findById(String idClient) {
+        authorizationService.ensureAdmin();
+
         Client client = clientRepository.findById(idClient)
                 .orElseThrow(() -> new EntityNotFoundException("Client introuvable : " + idClient));
 
@@ -58,8 +62,8 @@ public class ClientService implements IClientService {
 
     @Override
     @Transactional
-    public ClientResponseDTO update(ClientRequestDTO request, String idClient, String userId, String clientIdHeader) {
-        authorizationService.ensureCanUpdateClient(userId, clientIdHeader, idClient);
+    public ClientResponseDTO update(ClientRequestDTO request, String idClient) {
+        authorizationService.ensureCanUpdateClient(idClient);
 
         Client client = clientRepository.findById(idClient)
                 .orElseThrow(() -> new EntityNotFoundException("Client introuvable : " + idClient));
@@ -68,7 +72,7 @@ public class ClientService implements IClientService {
         client.setPrenom(request.getPrenom());
         client.setAdresse(request.getAdresse());
         client.setTelephone(request.getTelephone());
-        client.setEmail(request.getEmail());
+        client.setMail(request.getMail());
 
         Client updated = clientRepository.save(client);
         return new ClientMapper().toResponse(updated);
@@ -76,8 +80,8 @@ public class ClientService implements IClientService {
 
     @Override
     @Transactional
-    public void delete(String idClient, String userId) {
-        authorizationService.ensureAdmin(userId);
+    public void delete(String idClient) {
+        authorizationService.ensureAdmin();
 
         Client client = clientRepository.findById(idClient)
                 .orElseThrow(() -> new EntityNotFoundException("Client introuvable : " + idClient));

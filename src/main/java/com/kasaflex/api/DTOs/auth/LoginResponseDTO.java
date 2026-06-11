@@ -1,6 +1,5 @@
-package com.kasaflex.api.DTOs.utilisateur;
+package com.kasaflex.api.DTOs.auth;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,14 +9,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UtilisateurResponseDTO {
+public class LoginResponseDTO {
 
     private String idUtilisateur;
     private String nom;
     private String prenom;
     private String mail;
     private String idRole;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String motDePasse;
+    private String nomRole;
+    private String token;
 }

@@ -1,4 +1,4 @@
-package com.kasaflex.api.DTOs.client;
+package com.kasaflex.api.DTOs.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -11,20 +11,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientRequestDTO {
-
-    @NotBlank
-    private String nom;
-
-    private String prenom;
-
-    @NotBlank
-    private String adresse;
-
-    @NotBlank
-    private String telephone;
+public class LoginRequestDTO {
 
     @NotBlank
     @Email
     private String mail;
+
+    @NotBlank
+    private String motDePasse;
 }

@@ -17,13 +17,13 @@ import org.hibernate.generator.EventType;
 @AllArgsConstructor
 public class Modele {
     @Id
-    @Column(name = "idModele", length = 50, nullable = false, insertable = false, updatable = false)
+    @Column(name = "idmodele", length = 50, nullable = false, insertable = false, updatable = false)
     @Generated(event = EventType.INSERT)
     private String idModele;
 
-    @Column(name = "nomModele", length = 50, nullable = false)
+    @Column(name = "nommodele", length = 50, nullable = false)
     private String nomModele;
 
-    @Column(name = "numeroModele", length = 50, nullable = false, unique = true)
+    @Column(name = "numeromodele", length = 50, nullable = false, unique = true)
     private String numeroModele;
 }

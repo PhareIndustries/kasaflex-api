@@ -33,10 +33,10 @@ public class Utilisateur {
     @Column(name = "prenom", length = 50)
     private String prenom;
 
-    @Column(name = "email", length = 100, nullable = false, unique = true)
-    private String email;
+    @Column(name = "mail", length = 100, nullable = false, unique = true)
+    private String mail;
 
-    @Column(name = "motDePasse", length = 255, nullable = false)
+    @Column(name = "motdepasse", length = 255, nullable = false)
     private String motDePasse;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -10,5 +10,5 @@ public interface IStatutService {
     List<StatutResponseDTO> findAll();
     StatutResponseDTO update(StatutRequestDTO item, String idStatut);
     StatutResponseDTO findById(String idStatut);
-    void delete(String idStatut, String userId);
+    void delete(String idStatut);
 }

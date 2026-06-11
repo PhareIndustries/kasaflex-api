@@ -11,9 +11,9 @@ public interface IUtilisateurService {
 
     List<UtilisateurResponseDTO> findAll();
 
-    UtilisateurResponseDTO findById(String idUser);
+    UtilisateurResponseDTO findById(String idUtilisateur);
 
-    UtilisateurResponseDTO update(UtilisateurRequestDTO request, String idUser);
+    UtilisateurResponseDTO update(UtilisateurRequestDTO request, String idUtilisateur);
 
-    void delete(String idUser);
+    void delete(String idUtilisateur);
 }
