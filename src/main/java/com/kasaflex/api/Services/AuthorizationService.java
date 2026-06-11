@@ -39,6 +39,10 @@ public class AuthorizationService {
                 "Accès refusé : seul le client concerné ou un administrateur peut modifier ce compte");
     }
 
+    public void ensureCanViewUtilisateur(String idUtilisateur) {
+        ensureCanUpdateUtilisateur(idUtilisateur);
+    }
+
     public void ensureCanUpdateUtilisateur(String idUtilisateur) {
         AuthContext context = requireAuth();
 

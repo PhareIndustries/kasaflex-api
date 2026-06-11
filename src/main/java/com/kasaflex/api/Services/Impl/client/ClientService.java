@@ -40,6 +40,8 @@ public class ClientService implements IClientService {
     @Override
     @Transactional(readOnly = true)
     public List<ClientResponseDTO> findAll() {
+        authorizationService.ensureAdmin();
+
         ClientMapper mapper = new ClientMapper();
         return clientRepository.findAll()
                 .stream()
@@ -50,6 +52,8 @@ public class ClientService implements IClientService {
     @Override
     @Transactional(readOnly = true)
     public ClientResponseDTO findById(String idClient) {
+        authorizationService.ensureAdmin();
+
         Client client = clientRepository.findById(idClient)
                 .orElseThrow(() -> new EntityNotFoundException("Client introuvable : " + idClient));
 

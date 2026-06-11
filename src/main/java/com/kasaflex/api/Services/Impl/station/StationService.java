@@ -52,6 +52,8 @@ public class StationService implements IStationService {
 
     @Override
     public List<StationResponseDTO> findAll() {
+        authorizationService.ensureAuthenticatedUtilisateur();
+
         StationMapper mapper = new StationMapper();
 
         return stationRepository.findAll()
@@ -91,6 +93,8 @@ public class StationService implements IStationService {
     @Override
     @Transactional(readOnly = true)
     public StationResponseDTO findById(String idStation) {
+        authorizationService.ensureAuthenticatedUtilisateur();
+
         Station station = stationRepository.findById(idStation)
                 .orElseThrow(() -> new EntityNotFoundException("Station introuvable : " + idStation));
 

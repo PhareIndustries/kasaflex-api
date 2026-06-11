@@ -37,6 +37,8 @@ public class ModeleService implements IModeleService {
     @Override
     @Transactional(readOnly = true)
     public List<ModeleResponseDTO> findAll() {
+        authorizationService.ensureAdmin();
+
         ModeleMapper mapper = new ModeleMapper();
         return modeleRepository.findAll()
                 .stream()
@@ -47,6 +49,8 @@ public class ModeleService implements IModeleService {
     @Override
     @Transactional(readOnly = true)
     public ModeleResponseDTO findById(String idModele) {
+        authorizationService.ensureAdmin();
+
         Modele modele = modeleRepository.findById(idModele)
                 .orElseThrow(() -> new EntityNotFoundException("Modèle introuvable : " + idModele));
 

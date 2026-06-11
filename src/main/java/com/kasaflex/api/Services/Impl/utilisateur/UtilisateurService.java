@@ -53,6 +53,8 @@ public class UtilisateurService implements IUtilisateurService {
     @Override
     @Transactional(readOnly = true)
     public List<UtilisateurResponseDTO> findAll() {
+        authorizationService.ensureAdmin();
+
         boolean includePassword = authorizationService.isAdmin();
         UtilisateurMapper mapper = new UtilisateurMapper();
         return utilisateurRepository.findAll()
@@ -64,6 +66,8 @@ public class UtilisateurService implements IUtilisateurService {
     @Override
     @Transactional(readOnly = true)
     public UtilisateurResponseDTO findById(String idUtilisateur) {
+        authorizationService.ensureCanViewUtilisateur(idUtilisateur);
+
         Utilisateur utilisateur = utilisateurRepository.findById(idUtilisateur)
                 .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + idUtilisateur));
 

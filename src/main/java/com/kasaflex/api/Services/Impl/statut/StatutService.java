@@ -35,6 +35,8 @@ public class StatutService implements IStatutService {
 
     @Override
     public List<StatutResponseDTO> findAll() {
+        authorizationService.ensureAdmin();
+
         StatutMapper statutMapper = new StatutMapper();
         return statutRepository.findAll()
                 .stream()
@@ -58,6 +60,8 @@ public class StatutService implements IStatutService {
     @Override
     @Transactional(readOnly = true)
     public StatutResponseDTO findById(String idStatut) {
+        authorizationService.ensureAdmin();
+
         Statut statut = statutRepository.findById(idStatut)
                 .orElseThrow(() -> new EntityNotFoundException("Statut introuvable : " + idStatut));
 
